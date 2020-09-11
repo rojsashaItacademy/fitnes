@@ -1,7 +1,6 @@
 package ru.trinitydigital.fitnes.ui
 
 import android.os.Bundle
-import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.trinitydigital.fitnes.R
 
@@ -17,7 +16,6 @@ class MainActivity : BaseMapActivity() {
 
     private fun setupListeners() {
         fab.setOnClickListener {
-            map?.setStyle(Style.DARK)
         }
     }
 }

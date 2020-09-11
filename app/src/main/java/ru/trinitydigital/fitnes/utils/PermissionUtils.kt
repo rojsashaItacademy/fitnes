@@ -1,4 +1,4 @@
-package ru.trinitydigital.fitnes
+package ru.trinitydigital.fitnes.utils
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -17,7 +17,6 @@ object PermissionUtils {
 
         return false
     }
-
 
     private fun checkLocationPermission(activity: AppCompatActivity) =
         activity.checkSelfPermission(locationPermission[0]) == PackageManager.PERMISSION_GRANTED
