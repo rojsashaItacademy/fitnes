@@ -1,11 +1,10 @@
-package ru.trinitydigital.fitnes.ui
+package ru.trinitydigital.fitnes.ui.main
 
 import android.os.Bundle
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.trinitydigital.fitnes.R
 import ru.trinitydigital.fitnes.base.BaseMapActivity
+import ru.trinitydigital.fitnes.utils.showLongToast
 
 class MainActivity : BaseMapActivity() {
 
@@ -19,8 +18,7 @@ class MainActivity : BaseMapActivity() {
 
     private fun setupListeners() {
         fab.setOnClickListener {
+            showLongToast(R.string.app_name)
         }
     }
-
-
 }

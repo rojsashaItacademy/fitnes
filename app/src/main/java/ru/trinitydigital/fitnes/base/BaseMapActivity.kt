@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
@@ -14,12 +12,10 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import ru.trinitydigital.fitnes.R
 import ru.trinitydigital.fitnes.utils.MapUtils
 import ru.trinitydigital.fitnes.utils.PermissionUtils
-
 
 abstract class BaseMapActivity : SupportMapActivity() {
 
@@ -82,7 +78,7 @@ abstract class BaseMapActivity : SupportMapActivity() {
         )
     }
 
-    protected fun addMarker(latLng: LatLng) {
+    private fun addMarker(latLng: LatLng) {
         symbol?.let { symbolManager?.delete(it) }
         val symbolOptions = MapUtils.createSymbol(latLng, MARKER_IMAGE)
         symbol = symbolManager?.create(symbolOptions)

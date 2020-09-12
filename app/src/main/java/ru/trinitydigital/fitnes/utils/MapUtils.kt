@@ -24,8 +24,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ru.trinitydigital.fitnes.BuildConfig
-import ru.trinitydigital.fitnes.R
-import ru.trinitydigital.fitnes.base.BaseMapActivity
 
 object MapUtils {
 
