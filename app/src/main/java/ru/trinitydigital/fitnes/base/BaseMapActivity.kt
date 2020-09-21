@@ -2,8 +2,14 @@ package ru.trinitydigital.fitnes.base
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Handler
+import android.os.Looper
 import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
@@ -44,28 +50,51 @@ abstract class BaseMapActivity : SupportMapActivity() {
         style.addSource(MapUtils.getSource(LINE_SOURCE))
     }
 
-    private fun getDirections(latLng: LatLng) {
-        val location = map?.locationComponent?.lastKnownLocation
+//    private fun getDirections(latLng: LatLng) {
+//        val location = map?.locationComponent?.lastKnownLocation
+//
+//        MapUtils.getDirections(location, latLng) { data ->
+//            val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
+//            source?.let { geoJsonSource ->
+//                data?.geometry()?.let {
+//                    source.setGeoJson(
+//                        LineString.fromPolyline(
+//                            it,
+//                            PRECISION_6
+//                        )
+//                    )
+//                }
+//            }
+//        }
+//    }
 
-        MapUtils.getDirections(location, latLng) { data ->
-            val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
-            source?.let { geoJsonSource ->
-                data?.geometry()?.let {
-                    source.setGeoJson(
-                        LineString.fromPolyline(
-                            it,
-                            PRECISION_6
-                        )
-                    )
-                }
-            }
+    protected fun getDirections(latLng: ArrayList<Point>) {
+
+        val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
+
+        val lineString = LineString.fromLngLats(latLng) /////
+        val featureCollection = FeatureCollection.fromFeature(Feature.fromGeometry(lineString))////
+
+
+        source?.let { geoJsonSource ->
+            geoJsonSource.setGeoJson(featureCollection)
+        }
+    }
+
+
+    protected fun getDirections1(latLng: FeatureCollection) {
+
+        val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
+
+        source?.let { geoJsonSource ->
+            geoJsonSource.setGeoJson(latLng)
         }
     }
 
     private fun setupListeners(mapBoxMap: MapboxMap) {
         mapBoxMap.addOnMapClickListener {
             addMarker(it)
-            getDirections(it)
+//            getDirections(it)
             return@addOnMapClickListener true
         }
     }
@@ -120,10 +149,12 @@ abstract class BaseMapActivity : SupportMapActivity() {
     }
 
     private fun animateCamera(latLng: LatLng, zoom: Double = CAMERA_ZOOM) {
-        map?.animateCamera(
-            MapUtils.getCameraPosition(latLng, zoom),
-            CAMERA_DURATION
-        )
+        Handler(Looper.getMainLooper()).postDelayed({
+            map?.animateCamera(
+                MapUtils.getCameraPosition(latLng, zoom),
+                CAMERA_DURATION
+            )
+        }, 1000)
     }
 
     companion object {
@@ -131,7 +162,7 @@ abstract class BaseMapActivity : SupportMapActivity() {
         private const val LINE_SOURCE = "LINE_SOURCE"
         private const val LINE_LAYER = "LINE_LAYER"
 
-        private const val CAMERA_DURATION = 3000
+        private const val CAMERA_DURATION = 6000
         private const val CAMERA_ZOOM = 17.0
     }
 }

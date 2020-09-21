@@ -7,7 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 object PermissionUtils {
     const val LOCATION_REQUEST_CODE = 101
 
-    private val locationPermission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    private val locationPermission = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
 
     fun requestLocationPermission(activity: AppCompatActivity): Boolean {
         if (checkLocationPermission(activity))
