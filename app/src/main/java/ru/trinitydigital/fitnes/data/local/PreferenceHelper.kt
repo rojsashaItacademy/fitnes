@@ -1,4 +1,4 @@
-package ru.trinitydigital.fitnes.data
+package ru.trinitydigital.fitnes.data.local
 
 import android.content.Context
 import android.content.SharedPreferences

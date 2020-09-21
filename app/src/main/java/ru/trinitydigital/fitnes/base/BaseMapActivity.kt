@@ -2,16 +2,14 @@ package ru.trinitydigital.fitnes.base
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Handler
 import android.os.Looper
-import com.mapbox.core.constants.Constants.PRECISION_6
-import com.mapbox.geojson.Feature
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -20,6 +18,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import ru.trinitydigital.fitnes.R
+import ru.trinitydigital.fitnes.utils.Constants.MOSCOW
 import ru.trinitydigital.fitnes.utils.MapUtils
 import ru.trinitydigital.fitnes.utils.PermissionUtils
 
@@ -27,6 +26,8 @@ abstract class BaseMapActivity : SupportMapActivity() {
 
     private var symbolManager: SymbolManager? = null
     private var symbol: Symbol? = null
+
+    private var fusedLocation: FusedLocationProviderClient? = null
 
     override fun onMapLoaded(mapBoxMap: MapboxMap, style: Style) {
         setupListeners(mapBoxMap)
@@ -50,51 +51,16 @@ abstract class BaseMapActivity : SupportMapActivity() {
         style.addSource(MapUtils.getSource(LINE_SOURCE))
     }
 
-//    private fun getDirections(latLng: LatLng) {
-//        val location = map?.locationComponent?.lastKnownLocation
-//
-//        MapUtils.getDirections(location, latLng) { data ->
-//            val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
-//            source?.let { geoJsonSource ->
-//                data?.geometry()?.let {
-//                    source.setGeoJson(
-//                        LineString.fromPolyline(
-//                            it,
-//                            PRECISION_6
-//                        )
-//                    )
-//                }
-//            }
-//        }
-//    }
-
-    protected fun getDirections(latLng: ArrayList<Point>) {
-
+    protected fun getDirections(featureCollection: FeatureCollection) {
         val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
-
-        val lineString = LineString.fromLngLats(latLng) /////
-        val featureCollection = FeatureCollection.fromFeature(Feature.fromGeometry(lineString))////
-
-
         source?.let { geoJsonSource ->
             geoJsonSource.setGeoJson(featureCollection)
-        }
-    }
-
-
-    protected fun getDirections1(latLng: FeatureCollection) {
-
-        val source = map?.style?.getSourceAs<GeoJsonSource>(LINE_SOURCE)
-
-        source?.let { geoJsonSource ->
-            geoJsonSource.setGeoJson(latLng)
         }
     }
 
     private fun setupListeners(mapBoxMap: MapboxMap) {
         mapBoxMap.addOnMapClickListener {
             addMarker(it)
-//            getDirections(it)
             return@addOnMapClickListener true
         }
     }
@@ -129,22 +95,35 @@ abstract class BaseMapActivity : SupportMapActivity() {
     @SuppressLint("MissingPermission", "Range")
     private fun showUserLocation() {
         map?.style?.let {
-            val locationComponent = map?.locationComponent
+            fusedLocation = LocationServices.getFusedLocationProviderClient(this)
+            val locationComponentOptions = LocationComponentOptions.builder(this)
+                .build()
+
+            val locationComponentActivationOptions = LocationComponentActivationOptions
+                .builder(this, it)
+                .locationComponentOptions(locationComponentOptions)
+                .build()
+
+            var locationComponent = map?.locationComponent
             locationComponent?.activateLocationComponent(
                 LocationComponentActivationOptions.builder(applicationContext, it)
                     .build()
             )
+
+            locationComponent?.activateLocationComponent(locationComponentActivationOptions)
 
             locationComponent?.isLocationComponentEnabled = true
             locationComponent?.cameraMode = CameraMode.TRACKING
 
             locationComponent?.renderMode = RenderMode.COMPASS
 
-            val location = locationComponent?.lastKnownLocation
-
-            val latLng = MapUtils.locationToLatLng(location)
-
-            animateCamera(latLng)
+            fusedLocation?.lastLocation?.addOnSuccessListener {
+                if (it == null) {
+                    animateCamera(MOSCOW)
+                } else {
+                    animateCamera(LatLng(it.latitude, it.longitude))
+                }
+            }
         }
     }
 
