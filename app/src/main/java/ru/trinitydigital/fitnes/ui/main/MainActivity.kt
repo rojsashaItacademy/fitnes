@@ -3,6 +3,7 @@ package ru.trinitydigital.fitnes.ui.main
 import android.content.Intent
 import android.os.Bundle
 import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -29,6 +30,7 @@ class MainActivity : BaseMapActivity(), MainContract.View {
         setupListeners()
         presenter = MainPresenter()
         presenter?.bind(this)
+        presenter?.showLastRace()
     }
 
     private fun setupListeners() {
@@ -62,6 +64,10 @@ class MainActivity : BaseMapActivity(), MainContract.View {
     }
 
     override fun showRoute(featureCollection: FeatureCollection) {
-        getDirections(featureCollection)
+        runOnUiThread { getDirections(featureCollection) }
+    }
+
+    override fun showLastRoute(points: ArrayList<Point>) {
+        presenter?.collectData(points)
     }
 }

@@ -9,4 +9,5 @@ import ru.trinitydigital.fitnes.data.model.MainTraining
 @TypeConverters(value = [TrainingTypeConverter::class])
 @Database(entities = [MainTraining::class, LatLngPoints::class], version = 1)
 abstract class TrainingDataBase : RoomDatabase() {
+    abstract fun getTraingDao(): TrainingDao
 }

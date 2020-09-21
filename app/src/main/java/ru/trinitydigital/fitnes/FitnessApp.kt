@@ -23,7 +23,7 @@ class FitnessApp : Application() {
     fun getDB() = db
 
     companion object {
-        private var app: FitnessApp? = null
+        var app: FitnessApp? = null
         private const val DB_Name = "MY_DB"
     }
 }

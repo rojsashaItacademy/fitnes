@@ -8,9 +8,11 @@ interface MainContract {
 
     interface View {
         fun showRoute(featureCollection: FeatureCollection)
+        fun showLastRoute(points: ArrayList<Point>)
     }
 
     interface Presenter : LiveCycle<View> {
         fun collectData(list: ArrayList<Point>)
+        fun showLastRace()
     }
 }
