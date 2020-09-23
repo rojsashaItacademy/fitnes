@@ -1,5 +1,6 @@
 package ru.trinitydigital.fitnes.ui.main
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
@@ -29,6 +30,14 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
+    override fun checkBSState(state: Int?) {
+        if (state == BottomSheetBehavior.STATE_EXPANDED) {
+            view?.changeBSState(BottomSheetBehavior.STATE_COLLAPSED)
+        } else if (state == BottomSheetBehavior.STATE_COLLAPSED) {
+            view?.changeBSState(BottomSheetBehavior.STATE_EXPANDED)
+        }
+    }
+
     private fun saveInDB(list: ArrayList<Point>) {
         scope.launch(Dispatchers.IO) {
             val data = getTrainingModel(list)
@@ -37,7 +46,7 @@ class MainPresenter : MainContract.Presenter {
     }
 
     private fun getTrainingModel(list: ArrayList<Point>): MainTraining {
-       return MainTraining(
+        return MainTraining(
             point = LatLngPoints(points = list),
             distance = 134,
             duration = 134,

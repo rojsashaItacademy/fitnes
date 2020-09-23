@@ -9,10 +9,12 @@ interface MainContract {
     interface View {
         fun showRoute(featureCollection: FeatureCollection)
         fun showLastRoute(points: ArrayList<Point>)
+        fun changeBSState(stateCollapsed: Int)
     }
 
     interface Presenter : LiveCycle<View> {
         fun collectData(list: ArrayList<Point>)
         fun showLastRace()
+        fun checkBSState(state: Int?)
     }
 }
