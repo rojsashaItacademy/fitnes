@@ -3,27 +3,24 @@ package ru.trinitydigital.fitnes.ui
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import com.google.android.gms.location.*
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Geometry
 import com.mapbox.geojson.Point
+import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import ru.trinitydigital.fitnes.data.NotificationHelper
 import ru.trinitydigital.fitnes.data.events.TrainingEndedEvent
 import ru.trinitydigital.fitnes.data.events.UserLocationEvent
-import ru.trinitydigital.fitnes.utils.ForTest
 
 class MyLocationForegroundService : Service() {
 
     private val job = Job()
     private val scope = CoroutineScope(job)
+
+    private var totalLineDistance: Double = 0.0
 
     var fusedLocation: FusedLocationProviderClient? = null
 
@@ -62,10 +59,27 @@ class MyLocationForegroundService : Service() {
         override fun onLocationResult(locationResult: LocationResult?) {
             locationResult?.lastLocation?.let {
                 list.add(Point.fromLngLat(it.longitude, it.latitude))
-
-                EventBus.getDefault().post(UserLocationEvent(list))
+                calculateDistance()
+                EventBus.getDefault().post(UserLocationEvent(list, totalLineDistance))
             }
         }
+    }
+
+    //size = 2
+
+    private fun calculateDistance() {
+        val distanceBetweenLastAndSecondToLastClickPoint: Double
+        if (list.size >= 2) {
+            distanceBetweenLastAndSecondToLastClickPoint = TurfMeasurement.distance(
+                list[list.size - 2], list[list.size - 1]
+            )
+
+            if (distanceBetweenLastAndSecondToLastClickPoint > 0) {
+                totalLineDistance += distanceBetweenLastAndSecondToLastClickPoint // totalLineDistance = totalLineDistance + distanceBetweenLastAndSecondToLastClickPoint
+            }
+        }
+
+        Log.d("_____ASDsadasd", "$totalLineDistance")
     }
 
     fun test() {

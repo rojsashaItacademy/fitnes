@@ -8,6 +8,7 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import kotlinx.coroutines.*
 import ru.trinitydigital.fitnes.FitnessApp
+import ru.trinitydigital.fitnes.data.events.UserLocationEvent
 import ru.trinitydigital.fitnes.data.model.LatLngPoints
 import ru.trinitydigital.fitnes.data.model.MainTraining
 
@@ -17,6 +18,7 @@ class MainPresenter : MainContract.Presenter {
 
     private var view: MainContract.View? = null
     private var list = arrayListOf<Point>()
+    private var distance: Double = 0.0
     private var startTime: Long = 0
 
     override fun collectData(list: ArrayList<Point>) {
@@ -24,6 +26,10 @@ class MainPresenter : MainContract.Presenter {
         val lineString = LineString.fromLngLats(list)
         val featureCollection = FeatureCollection.fromFeature(Feature.fromGeometry(lineString))
         view?.showRoute(featureCollection)
+    }
+
+    override fun collectDistance(distance: Double) {
+        this.distance = distance
     }
 
     override fun showLastRace() {
@@ -60,7 +66,7 @@ class MainPresenter : MainContract.Presenter {
     private fun getTrainingModel(list: ArrayList<Point>): MainTraining {
         return MainTraining(
             point = LatLngPoints(points = list),
-            distance = 134,
+            distance = distance,
             duration = System.currentTimeMillis() - startTime,
             startAt = startTime,
             finishAt = System.currentTimeMillis(),

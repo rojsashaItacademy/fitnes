@@ -8,7 +8,7 @@ data class MainTraining(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val point: LatLngPoints,
-    val distance: Int,
+    val distance: Double,
     val duration: Long,
     val startAt: Long,
     val finishAt: Long,

@@ -18,7 +18,6 @@ import ru.trinitydigital.fitnes.base.BaseMapActivity
 import ru.trinitydigital.fitnes.data.events.TrainingEndedEvent
 import ru.trinitydigital.fitnes.data.events.UserLocationEvent
 import ru.trinitydigital.fitnes.ui.MyLocationForegroundService
-import ru.trinitydigital.fitnes.ui.TestBottomSheet
 import ru.trinitydigital.fitnes.ui.history.HistoryActivity
 
 class MainActivity : BaseMapActivity(), MainContract.View {
@@ -83,6 +82,8 @@ class MainActivity : BaseMapActivity(), MainContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun getUserData(event: UserLocationEvent) {
         presenter?.collectData(event.list)
+        presenter?.collectDistance(event.distance)
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -2,6 +2,7 @@ package ru.trinitydigital.fitnes.ui.main
 
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import ru.trinitydigital.fitnes.data.events.UserLocationEvent
 import ru.trinitydigital.fitnes.ui.LiveCycle
 
 interface MainContract {
@@ -14,6 +15,7 @@ interface MainContract {
 
     interface Presenter : LiveCycle<View> {
         fun collectData(list: ArrayList<Point>)
+        fun collectDistance(distance: Double)
         fun showLastRace()
         fun checkBSState(state: Int?)
         fun saveTraining()
