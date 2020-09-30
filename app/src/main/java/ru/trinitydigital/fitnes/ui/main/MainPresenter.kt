@@ -22,6 +22,7 @@ class MainPresenter : MainContract.Presenter {
     private var startTime: Long = 0
 
     override fun collectData(list: ArrayList<Point>) {
+        if (list.size == 1) saveCuurentTime()
         this.list = list
         val lineString = LineString.fromLngLats(list)
         val featureCollection = FeatureCollection.fromFeature(Feature.fromGeometry(lineString))
