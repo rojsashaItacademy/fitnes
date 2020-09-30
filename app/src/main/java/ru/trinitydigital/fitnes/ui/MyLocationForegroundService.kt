@@ -16,15 +16,14 @@ import com.mapbox.geojson.Point
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import ru.trinitydigital.fitnes.data.NotificationHelper
+import ru.trinitydigital.fitnes.data.events.TrainingEndedEvent
 import ru.trinitydigital.fitnes.data.events.UserLocationEvent
 import ru.trinitydigital.fitnes.utils.ForTest
 
 class MyLocationForegroundService : Service() {
 
-//    var manager : LocationManager? = null
-
-    val job = Job()
-    val scope = CoroutineScope(job)
+    private val job = Job()
+    private val scope = CoroutineScope(job)
 
     var fusedLocation: FusedLocationProviderClient? = null
 
@@ -38,9 +37,8 @@ class MyLocationForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == STOP_SERVICE_ACTION) {
             stopForeground(true)
+            stopSelf()
         } else {
-
-//            manager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
             fusedLocation = LocationServices.getFusedLocationProviderClient(applicationContext)
             val locationRequest = LocationRequest()
@@ -54,13 +52,6 @@ class MyLocationForegroundService : Service() {
                 Looper.getMainLooper()
             )
 
-//            manager?.requestLocationUpdates(
-//                LocationManager.GPS_PROVIDER,
-//                1000 * 10L,
-//                10f,
-//                locListener
-//            )
-
             startForeground(1, NotificationHelper.createNotification(applicationContext))
             test()
         }
@@ -71,14 +62,11 @@ class MyLocationForegroundService : Service() {
         override fun onLocationResult(locationResult: LocationResult?) {
             locationResult?.lastLocation?.let {
                 list.add(Point.fromLngLat(it.longitude, it.latitude))
+
                 EventBus.getDefault().post(UserLocationEvent(list))
             }
         }
     }
-
-//    private val locListener = LocationListener {
-//        Log.d("______test", it.toString())
-//    }
 
     fun test() {
         scope.launch(Dispatchers.Default) {
@@ -92,9 +80,9 @@ class MyLocationForegroundService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        manager?.removeUpdates(locListener)
         fusedLocation?.removeLocationUpdates(fLocListener)
         scope.cancel()
+        EventBus.getDefault().post(TrainingEndedEvent(true))
     }
 
     companion object {

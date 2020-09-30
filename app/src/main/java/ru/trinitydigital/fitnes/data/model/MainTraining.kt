@@ -9,9 +9,9 @@ data class MainTraining(
     val id: Int = 0,
     val point: LatLngPoints,
     val distance: Int,
-    val duration: Int,
-    val startAt: String,
-    val finishAt: String,
+    val duration: Long,
+    val startAt: Long,
+    val finishAt: Long,
     val calories: Int
 
 )

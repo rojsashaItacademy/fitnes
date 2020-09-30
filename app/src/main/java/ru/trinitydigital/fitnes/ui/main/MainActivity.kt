@@ -15,9 +15,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import ru.trinitydigital.fitnes.R
 import ru.trinitydigital.fitnes.base.BaseMapActivity
+import ru.trinitydigital.fitnes.data.events.TrainingEndedEvent
 import ru.trinitydigital.fitnes.data.events.UserLocationEvent
 import ru.trinitydigital.fitnes.ui.MyLocationForegroundService
 import ru.trinitydigital.fitnes.ui.TestBottomSheet
+import ru.trinitydigital.fitnes.ui.history.HistoryActivity
 
 class MainActivity : BaseMapActivity(), MainContract.View {
 
@@ -44,9 +46,13 @@ class MainActivity : BaseMapActivity(), MainContract.View {
 
     private fun setupListeners() {
         fab.setOnClickListener {
-//            startForegroundService()
-            val bottomSheet = TestBottomSheet()
-            bottomSheet.show(supportFragmentManager, "test")
+            startForegroundService()
+//            val bottomSheet = TestBottomSheet()
+//            bottomSheet.show(supportFragmentManager, "test")
+        }
+
+        btnAllTrainings.setOnClickListener {
+            startActivity(Intent(applicationContext, HistoryActivity::class.java))
         }
 
         btnBottomSheet.setOnClickListener {
@@ -77,6 +83,11 @@ class MainActivity : BaseMapActivity(), MainContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun getUserData(event: UserLocationEvent) {
         presenter?.collectData(event.list)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun endedTraining(event: TrainingEndedEvent) {
+        presenter?.saveTraining()
     }
 
     override fun onStart() {

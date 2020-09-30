@@ -16,5 +16,8 @@ interface MainContract {
         fun collectData(list: ArrayList<Point>)
         fun showLastRace()
         fun checkBSState(state: Int?)
+        fun saveTraining()
+        fun saveCuurentTime()
+
     }
 }

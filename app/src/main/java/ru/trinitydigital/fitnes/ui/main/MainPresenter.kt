@@ -1,5 +1,6 @@
 package ru.trinitydigital.fitnes.ui.main
 
+import android.util.Log
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -15,9 +16,11 @@ class MainPresenter : MainContract.Presenter {
     private val scope = CoroutineScope(Job())
 
     private var view: MainContract.View? = null
+    private var list = arrayListOf<Point>()
+    private var startTime: Long = 0
 
     override fun collectData(list: ArrayList<Point>) {
-        saveInDB(list)
+        this.list = list
         val lineString = LineString.fromLngLats(list)
         val featureCollection = FeatureCollection.fromFeature(Feature.fromGeometry(lineString))
         view?.showRoute(featureCollection)
@@ -26,7 +29,8 @@ class MainPresenter : MainContract.Presenter {
     override fun showLastRace() {
         scope.launch(Dispatchers.IO) {
             val data = FitnessApp.app?.getDB()?.getTraingDao()?.getTraing()
-            data?.point?.points?.let { view?.showLastRoute(it) }
+            Log.d("adasdasd", "adasdasdsad")
+//            data?.point?.points?.let { view?.showLastRoute(it) }
         }
     }
 
@@ -36,6 +40,14 @@ class MainPresenter : MainContract.Presenter {
         } else if (state == BottomSheetBehavior.STATE_COLLAPSED) {
             view?.changeBSState(BottomSheetBehavior.STATE_EXPANDED)
         }
+    }
+
+    override fun saveTraining() {
+        saveInDB(list)
+    }
+
+    override fun saveCuurentTime() {
+        startTime = System.currentTimeMillis()
     }
 
     private fun saveInDB(list: ArrayList<Point>) {
@@ -49,9 +61,9 @@ class MainPresenter : MainContract.Presenter {
         return MainTraining(
             point = LatLngPoints(points = list),
             distance = 134,
-            duration = 134,
-            startAt = "asdasdasd",
-            finishAt = "asdasdasd",
+            duration = System.currentTimeMillis() - startTime,
+            startAt = startTime,
+            finishAt = System.currentTimeMillis(),
             calories = 124
         )
     }

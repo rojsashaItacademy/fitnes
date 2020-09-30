@@ -6,3 +6,7 @@ import com.mapbox.geojson.Point
 data class UserLocationEvent(
     val list: ArrayList<Point>
 )
+
+data class TrainingEndedEvent(
+    val isFinished: Boolean
+)
