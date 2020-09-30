@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Fitnes</string>
     <string name="next">next</string>
+    <string name="start_time">Время начала: %1s</string>
+    <string name="end_time">Время окончания: %1s</string>
+    <string name="distance">Расстояник: %1s километров</string>
 </resources>
